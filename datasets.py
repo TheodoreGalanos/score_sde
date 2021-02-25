@@ -176,7 +176,7 @@ def get_dataset(config, additional_dim=None, uniform_dequantization=False, evalu
       sample = tf.io.parse_single_example(d, features={
         'image/shape': tf.io.FixedLenFeature([3], tf.int64),
         'image/encoded': tf.io.FixedLenFeature([], tf.string)})
-      data = tf.io.decode_raw(sample['image/encoded''], tf.uint8)
+      data = tf.io.decode_raw(sample['image/encoded'], tf.uint8)
       data = tf.reshape(data, sample['image/shape'])
       data = tf.transpose(data, (1, 2, 0))
       img = tf.image.convert_image_dtype(data, tf.float32)
