@@ -18,7 +18,7 @@ def get_config():
   
   # data
   data = config.data
-  data.dataset = 'FFHQ'
+  data.dataset = 'BUILDINGS'
   data.image_size = 256
   data.tfrecords_path = '/content/buildings256.tfrecords'
 
