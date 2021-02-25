@@ -156,7 +156,7 @@ def get_dataset(config, additional_dim=None, uniform_dequantization=False, evalu
       f'Dataset {config.data.dataset} not yet supported.')
 
   # Customize preprocess functions for each dataset.
-  if config.data.dataset in ['FFHQ', 'CelebAHQ', 'BUILDINGS']:
+  if config.data.dataset in ['FFHQ', 'CelebAHQ']:
     def preprocess_fn(d):
       sample = tf.io.parse_single_example(d, features={
         'shape': tf.io.FixedLenFeature([3], tf.int64),
@@ -171,6 +171,21 @@ def get_dataset(config, additional_dim=None, uniform_dequantization=False, evalu
         img = (tf.random.uniform(img.shape, dtype=tf.float32) + img * 255.) / 256.
       return dict(image=img, label=None)
 
+  elif config.data.dataset in ['BUILDINGS']:
+    def preprocess_fn(d):
+      sample = tf.io.parse_single_example(d, features={
+        'image/shape': tf.io.FixedLenFeature([3], tf.int64),
+        'image/encoded': tf.io.FixedLenFeature([], tf.string)})
+      data = tf.io.decode_raw(sample['data'], tf.uint8)
+      data = tf.reshape(data, sample['shape'])
+      data = tf.transpose(data, (1, 2, 0))
+      img = tf.image.convert_image_dtype(data, tf.float32)
+      if config.data.random_flip and not evaluation:
+        img = tf.image.random_flip_left_right(img)
+      if uniform_dequantization:
+        img = (tf.random.uniform(img.shape, dtype=tf.float32) + img * 255.) / 256.
+      return dict(image=img, label=None)
+    
   else:
     def preprocess_fn(d):
       """Basic preprocessing function scales data to [0, 1) and randomly flips."""
