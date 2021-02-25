@@ -15,6 +15,12 @@ def get_config():
   sampling.method = 'pc'
   sampling.predictor = 'reverse_diffusion'
   sampling.corrector = 'langevin'
+  
+  # data
+  data = config.data
+  data.dataset = 'FFHQ'
+  data.image_size = 256
+  data.tfrecords_path = '/content/buildings256.tfrecords'
 
   # model
   model = config.model
